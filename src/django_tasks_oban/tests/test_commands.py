@@ -10,7 +10,6 @@ class ObanCommandTest(TestCase):
 
         cmd = Command()
 
-        # Teste com valor explícito e valor default
         parsed = cmd._parse_queues("mail:5,default", default_val=10)
         self.assertEqual(parsed["mail"], 5)
         self.assertEqual(parsed["default"], 10)

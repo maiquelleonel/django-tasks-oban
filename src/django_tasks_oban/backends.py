@@ -1,8 +1,9 @@
 import uuid
 from datetime import timedelta
 
+from django.db import transaction
+from django.tasks import TaskResult, TaskResultStatus
 from django.tasks.backends.base import BaseTaskBackend
-from django.tasks.base import TaskResult, TaskResultStatus  # No Django 6 real
 from django.utils import timezone
 
 from .models import ObanJob, ObanJobState
@@ -10,62 +11,72 @@ from .models import ObanJob, ObanJobState
 
 class ObanTaskBackend(BaseTaskBackend):
     supports_defer = True
-    supports_run_after = True
     supports_priority = True
+    supports_run_after = True
 
     def __init__(self, alias, params):
         super().__init__(alias, params)
         self.queue_name = params.get("QUEUE", "default")
 
-    def enqueue(self, task, args, kwargs):
-        # 1. Preparar dados para o Oban
+    def _prepare_job_data(self, task, args, kwargs):
         now = timezone.now()
 
-        # 1. Pegar o run_after do objeto Task (timedelta)
-        # O Django 6 Task object tem o atributo .run_after
         run_after = getattr(task, "run_after", None)
 
-        # 2. Calcular o scheduled_at
-        if run_after and isinstance(run_after, timedelta):
-            scheduled_at = now + run_after
-        else:
-            # Fallback para o 'run_at' que pode vir nas options (se houver)
-            scheduled_at = now
+        scheduled_at = now
+        if isinstance(run_after, timedelta):
+            scheduled_at += run_after
 
         state = ObanJobState.AVAILABLE
-        if scheduled_at > timezone.now():
+        if scheduled_at > now:
             state = ObanJobState.SCHEDULED
 
-        # 2. Criar o registro no banco (Sync)
-        # O Django 6 espera que retornemos um ID. Como o ObanJob ainda
-        # não foi persistido (on_commit), geramos um UUID ou usamos o ID do DB.
-        job_id = str(uuid.uuid4())
+        return {
+            "worker": task.name,
+            "args": kwargs or {},
+            "meta": {"args": list(args)},
+            "queue": getattr(task, "queue_name", self.queue_name),
+            "state": state,
+            "priority": getattr(task, "priority", 0),
+            "scheduled_at": scheduled_at,
+        }
 
-        # Persistência
+    def enqueue(self, task, args, kwargs):
+        data = self._prepare_job_data(task, args, kwargs)
 
-        ObanJob.objects.create(
-            worker=task.name,
-            args=kwargs or {},
-            meta={"args": list(args), "django_task_id": job_id},
-            queue=getattr(task, "queue", "default"),
-            state=state,
-            priority=getattr(task, "priority", 0),
-            scheduled_at=scheduled_at,
-        )
+        conn = transaction.get_connection()
 
-        # 3. Retornar o TaskResult com TODOS os 10 argumentos obrigatórios
-        # Como a tarefa acabou de ser enfileirada, preenchemos o "estado inicial"
+        def _save():
+            return ObanJob.objects.create(**data)
+
+        if conn.in_atomic_block:
+            transaction.on_commit(_save)
+        else:
+            _save()
+
+        return self._result(task, args, kwargs)
+
+    async def aenqueue(self, task, args, kwargs):
+        """Implementação Assíncrona: Injeta .acreate()"""
+        data = self._prepare_job_data(task, args, kwargs)
+
+        await ObanJob.objects.acreate(**data)
+
+        return self._result(task, args, kwargs)
+
+    def _result(self, task, args, kwargs):
+
         return TaskResult(
-            id=job_id,
+            id=str(uuid.uuid4()),
             status=TaskResultStatus.READY,
             enqueued_at=timezone.now(),
+            args=args,
+            kwargs=kwargs,
+            task=task,
+            backend=self,
             started_at=None,
             finished_at=None,
             last_attempted_at=None,
-            args=args,
-            kwargs=kwargs,
             errors=[],
             worker_ids=[],
-            task=task,
-            backend=self,
         )
