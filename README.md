@@ -76,7 +76,7 @@ uv run manage.py migrate
 
 ## 📝 Usage (Django 6 Tasks API)
 
-### Sync WSGI
+### 🔁 Sync WSGI
 
 ```python
 from django.tasks import task
@@ -95,7 +95,7 @@ process_order.using(run_after=timedelta(minutes=5)).enqueue(order_id=123)
 process_order.using(queue="heavy_reports").enqueue(order_id=123)
 ```
 
-### Assync (ASGI/Ninja/FastAPI)
+### 🔀 Assync (ASGI/Ninja/FastAPI)
 ```python
 
 @task()
