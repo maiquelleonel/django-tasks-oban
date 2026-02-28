@@ -1,10 +1,14 @@
 # 🐘 django-tasks-oban 🚀
 
-[![CI](https://github.com)](https://github.com)
-[![Python versions](https://img.shields.io)](https://www.python.org)
-[![Django versions](https://img.shields.io)](https://docs.djangoproject.com)
-[![Coverage Status](https://img.shields.io)](#-test-coverage)
-[![License: MIT](https://img.shields.io)](https://opensource.org)
+[![CI](https://github.com/maiquelleonel/django-tasks-oban/actions/workflows/ci.yml/badge.svg)](https://github.com/maiquelleonel/django-tasks-oban/actions/workflows/ci.yml/badge.svg)
+
+[![Python](https://img.shields.io/badge/python-lang?style=plastic&link=https%3A%2F%2Fwww.python.org)](https://img.shields.io/badge/python-lang?style=plastic&link=https%3A%2F%2Fwww.python.org)
+[![Django](https://img.shields.io/badge/django-project?style=plastic&link=https%3A%2F%2Fwww.djangoproject.com)](https://img.shields.io/badge/django-project?style=plastic&link=https%3A%2F%2Fwww.djangoproject.com)
+
+[![codecov](https://codecov.io/github/maiquelleonel/django-tasks-oban/graph/badge.svg?token=OG4ZFY7FX6)](https://codecov.io/github/maiquelleonel/django-tasks-oban)
+
+![GitHub License](https://img.shields.io/github/license/maiquelleonel/django-tasks-oban)
+
 
 **A high-performance, transactional, and PostgreSQL-native task producer for Django 6.0+, fully compatible with the [Oban](https://github.comhttps://github.com/oban-bg/oban) ecosystem.**
 

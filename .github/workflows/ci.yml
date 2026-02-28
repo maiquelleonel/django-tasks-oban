@@ -56,4 +56,11 @@ jobs:
         run: |
           export PYTHONPATH=$PYTHONPATH:.
           uv run coverage run manage.py test tests -v 2
-          uv run coverage report
+          uv run coverage xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml
+          fail_ci_if_error: true
