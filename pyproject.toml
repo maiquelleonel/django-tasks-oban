@@ -1,17 +1,16 @@
 [project]
 name = "django-tasks-oban"
-version = "0.1.0"
-description = "Add your description here"
+version = "0.2.0"
+description = "Transactional PostgreSQL-native Task Backend for Django 6+ (Oban-compatible)"
 readme = "README.md"
 authors = [
     { name = "Maiquel Leonel", email = "skywishmtfk@gmail.com" }
 ]
-requires-python = ">=3.12.0"
+requires-python = ">=3.13.0"
 dependencies = [
     "django>=6.0",
-    "asyncpg>=0.29.0", # Adicione explicitamente para garantir o driver Postgresuv
-    "oban",
-    "uuid>=1.30",
+    "psycopg[binary]>=3.1.0",
+    "asyncpg>=0.29.0",
 ]
 
 [build-system]
@@ -22,7 +21,7 @@ build-backend = "uv_build"
 dev = [
     "coverage>=7.13.4",
     "dj-database-url>=3.1.2",
-    "psycopg[binary]>=3.3.3",
+    "oban",
 ]
 
 [tool.uv.sources]
@@ -34,13 +33,10 @@ source = ["src/django_tasks_oban"]
 branch = true
 omit = [
     "*/migrations/*",
-    "*/management/commands/*", # O worker é testado via mock, o real não terá coverage 100%
+    "*/management/commands/*",
     "*/tests/*",
     "*/apps.py",
     "*/admin.py",
-    "__init__.py",
-    "manage.py",
-    "runtests.py",
 ]
 
 [tool.coverage.report]

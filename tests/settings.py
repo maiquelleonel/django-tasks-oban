@@ -10,16 +10,15 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-# Apps necessários para o funcionamento do django-tasks-oban
 INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.auth",
-    "django.contrib.postgres",  # OBRIGATÓRIO para ArrayField
-    "django_tasks_oban",  # O seu pacote
+    "django.contrib.postgres",
+    "django_tasks_oban",
+    "tests",
 ]
 
-# Configuração de Banco de Dados (Postgres é mandatório para Oban/ArrayField)
-# Tenta ler do ambiente (útil para GitHub Actions/Docker) ou usa um padrão local
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -31,7 +30,6 @@ DATABASES = {
     }
 }
 
-# Configuração da nova Tasks API do Django 6
 TASKS = {
     "default": {
         "BACKEND": "django_tasks_oban.backends.ObanTaskBackend",
@@ -42,9 +40,9 @@ TASKS = {
     }
 }
 
-# Configurações básicas de fuso horário (Oban depende disso para scheduled_at)
+
 USE_TZ = False
 TIME_ZONE = "UTC"
 
-# Necessário para o Runner do Django não reclamar de tabelas de migração
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
