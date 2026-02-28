@@ -35,8 +35,9 @@ jobs:
             ${{ runner.os }}-docker-
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v3
+        uses: astral-sh/setup-uv@v5
         with:
+          version: "latest"
           enable-cache: true
 
       - name: Set up Python 3.13
@@ -53,4 +54,6 @@ jobs:
           POSTGRES_HOST: localhost
           POSTGRES_PORT: 5432
         run: |
-          uv run python manage.py test -v 2
+          export PYTHONPATH=$PYTHONPATH:.
+          uv run coverage run manage.py test tests -v 2
+          uv run coverage report
