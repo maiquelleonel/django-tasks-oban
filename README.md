@@ -6,7 +6,7 @@
 [![Coverage Status](https://img.shields.io)](#-test-coverage)
 [![License: MIT](https://img.shields.io)](https://opensource.org)
 
-**A high-performance, transactional, and PostgreSQL-native task producer for Django 6.0+, fully compatible with the [Oban](https://github.com) ecosystem.**
+**A high-performance, transactional, and PostgreSQL-native task producer for Django 6.0+, fully compatible with the [Oban](https://github.comhttps://github.com/oban-bg/oban) ecosystem.**
 
 ---
 
@@ -27,8 +27,8 @@ Built for the modern Django era, this package provides a seamless bridge to the 
 This package is a **Producer-Only** implementation. It focuses on safely enqueuing jobs with maximum reliability. 
 
 To process jobs, you should use an official Oban worker:
-1. **[Oban (Elixir)](https://github.com)**: For high-throughput Elixir/Phoenix clusters.
-2. **[Oban-py](https://github.com)**: For Python-based workers.
+1. **[Oban (Elixir)](https://github.com/oban-bg/oban)**: For high-throughput Elixir/Phoenix clusters.
+2. **[Oban-py](https://github.com/oban-bg/oban-py.git)**: For Python-based workers.
 
 ---
 
@@ -37,7 +37,7 @@ To process jobs, you should use an official Oban worker:
 Optimized for the **uv** package manager:
 
 ```bash
-uv add "django-tasks-oban @ git+https://github.com"
+uv add "django-tasks-oban @ git+https://github.com/maiquelleonel/django-tasks-oban.git"
 ```
 
 ---
@@ -122,6 +122,6 @@ Run tests: `uv run python manage.py test tests -v 2`.
 
 ## 📄 Licença
 
-Distribuído sob a licença MIT. Veja LICENSE para mais informações.
+MIT License. See `LICENSE` for details.
 
-Desenvolvido com ❤️ pela comunidade Python.
+Build with ❤️ and ☕
