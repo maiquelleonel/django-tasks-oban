@@ -1,41 +1,52 @@
 # 🐘 django-tasks-oban 🚀
 
-[![Python versions](https://img.shields.io)](https://pypi.org)
-[![Django versions](https://img.shields.io)](https://pypi.org)
+[![CI](https://github.com)](https://github.com)
+[![Python versions](https://img.shields.io)](https://www.python.org)
+[![Django versions](https://img.shields.io)](https://docs.djangoproject.com)
 [![Coverage Status](https://img.shields.io)](#-test-coverage)
 [![License: MIT](https://img.shields.io)](https://opensource.org)
 
-**A reliable, transactional, and PostgreSQL-native background job runner for Django 6.0+, powered by [Oban.py](https://github.com).**
+**A high-performance, transactional, and PostgreSQL-native task producer for Django 6.0+, fully compatible with the [Oban](https://github.com) ecosystem.**
 
 ---
 
-## ✨ Por que o django-tasks-oban?
+## ✨ Why django-tasks-oban?
 
-O **Oban** utiliza o seu próprio banco de dados PostgreSQL como fila, eliminando a necessidade de Redis ou RabbitMQ. Esta implementação para Django 6 traz:
+Built for the modern Django era, this package provides a seamless bridge to the Oban job processing engine. By using your existing PostgreSQL database as a queue, you eliminate the need for Redis or RabbitMQ.
 
-*   **📦 Consistência Transacional (Sync/Async)**: Enfileire tarefas dentro da mesma transação do banco. Se o `commit` falhar, a tarefa não é criada.
-*   **⚡ Injeção de Dependência (DI)**: Suporte nativo para `enqueue` (Sync) e `aenqueue` (Async) usando `create` e `acreate` do Django 6.
-*   **🕒 Agendamento Preciso**: Suporte total à sugar syntax `.using(run_after=...)` do Django.
-*   **🛠️ 100% Code Coverage**: Código testado exaustivamente, do backend ao worker.
-*   **🌍 Compatibilidade Elixir**: Estrutura de tabela idêntica ao [Oban Elixir](https://github.com).
+*   **📦 Transactional Integrity**: Enqueue jobs within the same database transaction. If the transaction rolls back, the job is never created. No more "ghost jobs"!
+*   **⚡ Async-Native DI**: Optimized for **Python 3.13**, supporting both `enqueue` (Sync) and `aenqueue` (Async) using Django 6's ORM `create`/`acreate` dependency injection.
+*   **🕒 Precise Scheduling**: Full support for Django's `.using(run_after=...)` sugar syntax.
+*   **🛠️ 100% Test Coverage**: Solid code base, fully tested from backends to models.
+*   **🌍 Multi-Language Ready**: Uses the official Oban schema, allowing workers in **Elixir**, **Python**, or any Oban-compatible runner to process your Django jobs.
 
 ---
 
-## 🛠 Instalação
+## 🏗 Architectural Design: Producer-Only
 
-Otimizado para o moderno gerenciador de pacotes **uv**:
+This package is a **Producer-Only** implementation. It focuses on safely enqueuing jobs with maximum reliability. 
+
+To process jobs, you should use an official Oban worker:
+1. **[Oban (Elixir)](https://github.com)**: For high-throughput Elixir/Phoenix clusters.
+2. **[Oban-py](https://github.com)**: For Python-based workers.
+
+---
+
+## 🛠 Installation
+
+Optimized for the **uv** package manager:
 
 ```bash
 uv add "django-tasks-oban @ git+https://github.com"
 ```
 
 ---
-## ⚙️ Configuração
+## ⚙️ Configuration
 
-Adicione ao seu INSTALLED_APPS (O django.contrib.postgres é obrigatório):
+Add to your `INSTALLED_APPS` (django.contrib.postgres is required):
 
 ```python
-# no settings.py
+# settings.py
 
 INSTALLED_APPS = [
     ...,
@@ -47,41 +58,21 @@ TASKS = {
     "default": {
         "BACKEND": "django_tasks_oban.backends.ObanTaskBackend",
         "OPTIONS": {
-            "QUEUE": "default",                # Fila padrão
-            "DEFAULT_CONCURRENCY": 15,         # Concorrência se não especificada
-            "QUEUES": {                        # Definição de filas e limites
-                "default": 10,
-                "mail": 5,
-                "heavy_reports": 2
-            },
-            "POOL": {                          # Configurações do Pool de Conexões Async
-                "min_size": 1,
-                "max_size": 20
-            }
+            "QUEUE": "default",               
+            "DEFAULT_CONCURRENCY": 15,
         }
     }
 }
 ```
+## Run migrations to create the `oban_jobs` table
 
 ```shell
 uv run manage.py migrate
 ```
 
+## 📝 Usage (Django 6 Tasks API)
 
-## 🏃‍♂️ Rodando o Worker
-O worker é um comando de gerenciamento assíncrono que suporta escalas flexíveis:
-
-```shell 
-# Roda as filas configuradas no settings
-uv run manage.py oban_worker
-
-# Sobrescreve as filas via CLI (específico para este nó)
-uv run manage.py oban_worker --queues high_priority:20,default,mail:5
-```
-
-## 📝 Uso (Django 6 Tasks API)
-
-### Sincrono WSGI
+### Sync WSGI
 
 ```python
 from django.tasks import task
@@ -91,14 +82,16 @@ from datetime import timedelta
 def process_order(order_id):
     pass
 
+# simple enqueue
 process_order.enqueue(order_id=123)
 
+# scheduled
 process_order.using(run_after=timedelta(minutes=5)).enqueue(order_id=123)
 
 process_order.using(queue="heavy_reports").enqueue(order_id=123)
 ```
 
-### Assíncrono (ASGI/Ninja/FastAPI)
+### Assync (ASGI/Ninja/FastAPI)
 ```python
 
 @task()
@@ -109,21 +102,22 @@ await process_data.aenqueue(data={...})
 ```
 
 ## 📊 Test Coverage
-Levamos a qualidade a sério. Nossos backends e modelos possuem cobertura total:
+We take reliability seriously. Our core modules maintain 100% coverage:
 
-| Name | Stmts | Miss | Cover |
-|---|---|---|---|
-|backends.py | 39 | 0 | 100%|
-|engine.py | 3 | 0| 100%|
-|models.py | 33 | 0 | 100%|
-|TOTAL | 75 | 0 | 100%|
+|Module|Stmts|Miss|Branch|Cover|
+|---|---|---|---|---|
+|backends.py|39|0|6|100%|
+|engine.py|3|0|0|100%|
+|models.py|33|0|0|100%|
 
-## 🤝 Contribuição
+## 🤝 Contributing
 
-1. Clone o repositório.
-2. Certifique-se de ter o **Python 3.13** e **PostgreSQL**.
-3. Instale as dependências: uv sync --dev.
-4. Rode os testes: uv run python manage.py test tests -v 2.
+Clone the repo.
+Ensure you have Python **3.13** and **PostgreSQL**.
+
+Install dev dependencies: `uv sync --dev`.
+
+Run tests: `uv run python manage.py test tests -v 2`.
 
 
 ## 📄 Licença
