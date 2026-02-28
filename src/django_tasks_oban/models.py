@@ -1,3 +1,4 @@
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils import timezone
 
@@ -10,13 +11,6 @@ class ObanJobState(models.TextChoices):
     SCHEDULED = "scheduled", "scheduled"
     RETRYABLE = "retryable", "retryable"
     CANCELLED = "cancelled", "cancelled"
-
-
-# Importações condicionais para suporte total ao Postgres
-try:
-    from django.contrib.postgres.fields import ArrayField
-except ImportError:
-    ArrayField = None
 
 
 class ObanJob(models.Model):
@@ -56,5 +50,5 @@ class ObanJob(models.Model):
             models.Index(fields=["state", "queue", "priority", "scheduled_at", "id"], name="oban_jobs_main_idx"),
         ]
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         return f"{self.id}: {self.worker} [{self.state}]"

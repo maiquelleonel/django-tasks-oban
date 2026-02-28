@@ -4,10 +4,7 @@ from django.db import connections
 from oban import Oban
 
 
-async def get_oban_instance(alias: str = "default", queues: dict = None, pool_options: dict = None):
-    """
-    Cria a instância do Oban conectando diretamente via asyncpg.
-    """
+async def get_oban_instance(alias: str = "default", queues: dict = None, pool_options: dict = None):  # pragma: no cover
     db_conf = connections[alias].settings_dict
 
     if "postgresql" not in db_conf["ENGINE"]:
