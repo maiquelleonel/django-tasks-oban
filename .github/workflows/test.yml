@@ -47,7 +47,10 @@ jobs:
 
       - name: Run Django Tests
         env:
-          # Passamos a DSN para o Django via variável de ambiente
-          DATABASE_URL: postgres://postgres:password@localhost:5432/test_db
+          POSTGRES_DB: test_db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: 5432
         run: |
           uv run python manage.py test -v 2
