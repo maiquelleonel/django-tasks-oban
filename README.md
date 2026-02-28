@@ -2,8 +2,8 @@
 
 [![CI](https://github.com/maiquelleonel/django-tasks-oban/actions/workflows/ci.yml/badge.svg)](https://github.com/maiquelleonel/django-tasks-oban/actions/workflows/ci.yml/badge.svg)
 
-[![Python](https://img.shields.io/badge/python-lang?style=plastic&link=https%3A%2F%2Fwww.python.org)](https://img.shields.io/badge/python-lang?style=plastic&link=https%3A%2F%2Fwww.python.org)
-[![Django](https://img.shields.io/badge/django-project?style=plastic&link=https%3A%2F%2Fwww.djangoproject.com)](https://img.shields.io/badge/django-project?style=plastic&link=https%3A%2F%2Fwww.djangoproject.com)
+[![Python](https://img.shields.io/badge/python-3.13-blue.svg?link=https%3A%2F%2Fwww.python.org)](https://www.python.org)
+[![Django](https://img.shields.io/badge/django-6.0%2B-darkgreen.svg?link=https%3A%2F%2Fwww.djangoproject.com)](https:://www.djangoproject.com)
 
 [![codecov](https://codecov.io/github/maiquelleonel/django-tasks-oban/graph/badge.svg?token=OG4ZFY7FX6)](https://codecov.io/github/maiquelleonel/django-tasks-oban)
 
