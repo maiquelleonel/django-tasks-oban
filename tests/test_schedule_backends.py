@@ -34,26 +34,26 @@ class ObanScheduledTest(TransactionTestCase, ObanScheduledTestMixin):
     def test_sync_enqueue_scheduled_atomic_commit(self):
         delay = 600
         with transaction.atomic():
-            notify_user_task.using(run_after=timedelta(seconds=delay)).enqueue(x=1)
+            notify_user_task.using(run_after=timedelta(seconds=delay)).enqueue(x=2)
             self.assertFalse(
                 ObanJob.objects.filter(
-                    args={"x": 1},
+                    args={"x": 2},
                 ).exists()
             )
 
-        job = ObanJob.objects.get(args={"x": 1})
+        job = ObanJob.objects.get(args={"x": 2})
         self.assertEqual(job.state, ObanJobState.SCHEDULED)
         self.assertTrue(job.scheduled_at > timezone.now())
 
     def test_sync_enqueue_scheduled_atomic_rollback(self):
         try:
             with transaction.atomic():
-                notify_user_task.using(run_after=timedelta(minutes=5)).enqueue(x=2)
+                notify_user_task.using(run_after=timedelta(minutes=5)).enqueue(x=4)
                 raise Exception("Random rollback")
         except Exception:
             pass
 
-        self.assertFalse(ObanJob.objects.filter(args={"x": 2}).exists())
+        self.assertFalse(ObanJob.objects.filter(args={"x": 4}).exists())
 
     async def test_async_aenqueue_scheduled(self):
         await notify_user_task.using(run_after=timedelta(seconds=300)).aenqueue(y=2)

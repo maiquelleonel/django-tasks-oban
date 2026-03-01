@@ -1,22 +1,22 @@
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils import timezone
+from oban.job import JobState
 
 
-class ObanJobState(models.TextChoices):
-    AVAILABLE = "available", "available"
-    EXECUTING = "executing", "executing"
-    COMPLETED = "completed", "completed"
-    DISCARDED = "discarded", "discarded"
-    SCHEDULED = "scheduled", "scheduled"
-    RETRYABLE = "retryable", "retryable"
-    CANCELLED = "cancelled", "cancelled"
+class ObanJobState(models.TextChoices): ...
+
+
+for s in JobState:
+    setattr(ObanJobState, s.name, s.value)
+
+ObanJobState._choices = [(s.value, s.name.title()) for s in JobState]
 
 
 class ObanJob(models.Model):
     id = models.BigAutoField(primary_key=True)
     state = models.TextField(
-        choices=ObanJobState.choices,
+        choices=ObanJobState._choices,
         default=ObanJobState.AVAILABLE,
     )
     queue = models.TextField(default="default")
@@ -26,7 +26,7 @@ class ObanJob(models.Model):
     args = models.JSONField(default=dict)
     meta = models.JSONField(default=dict, null=True)
 
-    errors = ArrayField(models.JSONField(), default=list)
+    errors = models.JSONField(default=list)
     tags = ArrayField(models.TextField(), default=list, null=True)
     attempted_by = ArrayField(models.TextField(), default=list, null=True)
 
@@ -43,6 +43,7 @@ class ObanJob(models.Model):
     cancelled_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
+        managed = False
         db_table = "oban_jobs"
         indexes = [
             models.Index(fields=["queue"], name="oban_jobs_queue_index"),

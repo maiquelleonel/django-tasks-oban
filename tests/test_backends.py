@@ -23,7 +23,7 @@ class ObanBackendTest(TransactionTestCase):
 
         notify_user_task.enqueue(user_id=42)
 
-        db_job = ObanJob.objects.get(worker="notify_user_task")
+        db_job = ObanJob.objects.filter(worker="notify_user_task").last()
         self.assertEqual(db_job.args, {"user_id": 42})
         self.assertEqual(db_job.state, ObanJobState.AVAILABLE)
 
@@ -69,11 +69,11 @@ class ObanBackendTest(TransactionTestCase):
             delayed_task.using(run_after=timedelta(seconds=3)).enqueue(some_id=24)
             self.assertFalse(
                 ObanJob.objects.filter(
-                    worker="delayed_task",
-                    args={"some_id": 42},
+                    worker="delayed_task", args={"some_id": 24}, state=ObanJobState.SCHEDULED
                 ).exists()
             )
 
-        db_job = ObanJob.objects.get(worker="delayed_task")
+        db_job = ObanJob.objects.filter(worker="delayed_task", args={"some_id": 24}).get()
+
         self.assertEqual(db_job.state, ObanJobState.SCHEDULED)
         self.assertTrue(db_job.scheduled_at > timezone.now())

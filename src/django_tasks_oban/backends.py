@@ -36,6 +36,7 @@ class ObanTaskBackend(BaseTaskBackend):
             "args": kwargs or {},
             "meta": {"args": list(args)},
             "queue": getattr(task, "queue_name", self.queue_name),
+            "errors": [],
             "state": state,
             "priority": getattr(task, "priority", 0),
             "scheduled_at": scheduled_at,
