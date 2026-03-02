@@ -25,11 +25,15 @@ def _normalize_timezone(dt):
 
 
 def _generate_unique_key(worker_name, args, kwargs):
-    payload = json.dumps(
-        {"w": worker_name, "a": args, "k": kwargs},
-        sort_keys=True,
-        default=str,
-    )
+    try:
+        payload = json.dumps(
+            {"w": worker_name, "a": args, "k": kwargs},
+            sort_keys=True,
+            default=str,
+        )
+    except (ValueError, TypeError):
+        payload = f"{worker_name}-{repr(args)}-{repr(kwargs)}"
+
     return hashlib.sha256(payload.encode()).hexdigest()
 
 
