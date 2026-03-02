@@ -47,9 +47,10 @@ class ObanTaskBackend(BaseTaskBackend):
 
         run_after = getattr(task, "run_after", None)
         worker_func = getattr(task, "func", None)
-        opts = OBAN_TASK_REGISTRY.get(worker_func) or {}
+        opts = OBAN_TASK_REGISTRY.get(worker_func, {}).copy()
         meta = {"args": list(args)}
         tags = []
+        scheduled_at = now
 
         if "unique" in opts:
             meta["unique_key"] = _generate_unique_key(task.name, args, kwargs)
@@ -64,7 +65,6 @@ class ObanTaskBackend(BaseTaskBackend):
 
             meta["unique_period"] = unique_period
             meta["unique_states"] = unique_states
-            del opts["unique"]
 
         if "tags" in opts:
             opt_tags = opts.get("tags", [])
@@ -72,10 +72,6 @@ class ObanTaskBackend(BaseTaskBackend):
             job_ = Job(worker=task.name, tags=tags)
             job_._normalize_tags()
             tags = job_.tags
-            del job_
-            del opts["tags"]
-
-        scheduled_at = now
 
         if "cron" in opts:
             if type(opts["cron"]) not in [str, dict]:
@@ -87,7 +83,6 @@ class ObanTaskBackend(BaseTaskBackend):
             meta["cron"] = True
             meta["cron_expr"] = opts["cron"]
             meta["timezone_tz"] = opts.get("timezone", None) or "UTC"
-            del opts["cron"]
             state = ObanJobState.SCHEDULED
             priority = 0
         else:
@@ -103,8 +98,11 @@ class ObanTaskBackend(BaseTaskBackend):
 
             priority = getattr(task, "priority", 0)
 
+        for key in ["cron", "tags", "unique"]:
+            opts.pop(key, None)
+
         # all other possibilities of vars
-        meta |= opts  # set all another possibilies of vars
+        meta |= opts
 
         return {
             "worker": task.name,
