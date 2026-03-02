@@ -106,14 +106,56 @@ async def process_data(data):
 await process_data.aenqueue(data={...})
 ```
 
+---
+## 💎 Advanced Features
+
+### 🛡️ Unique Jobs (Oban Enterprise Compatible)
+Prevent duplicate jobs from cluttering your queue. `django-tasks-oban` generates a deterministic SHA256 `unique_key` 
+based on the worker name and arguments, fully compatible with the Oban Elixir/Pro schema.
+
+```python
+from django_tasks_oban.decorators import oban_task
+
+@oban_task(
+    unique={"period": 300, "states": ["available", "scheduled"]},
+    priority=10
+)
+def generate_report(user_id):
+    pass
+```
+
+### 🗓️ Cron & Recurrence Metadata
+Easily tag jobs for recurrent execution. While this package is a Producer, it injects the necessary cron and 
+cron_expr metadata so your Oban workers (Python or Elixir) can manage recurrence windows.
+
+```python
+@oban_task(cron="*/5 * * * *", tags=["cleanup", "daily"])
+def nightly_cleanup():
+    pass
+```
+### 🛠️ Extensible Metadata
+Since Django 6 Task objects are immutable (frozen=True), we use a WeakKeyDictionary registry to attach 
+unlimited custom metadata to your tasks without hacking the Django core.
+
+```python
+@oban_task(custom_id="ABC-123", internal_trace_id="xyz-789")
+def trace_task():
+    pass
+# These will be automatically injected into the Oban 'meta' JSONB column.
+```
+
+
+
+
 ## 📊 Test Coverage
 We take reliability seriously. Our core modules maintain 100% coverage:
 
 |Module|Stmts|Miss|Branch|Cover|
 |---|---|---|---|---|
-|backends.py|39|0|6|100%|
-|engine.py|3|0|0|100%|
-|models.py|33|0|0|100%|
+|src/django_tasks_oban/backends.py|39|0|6|100%|
+|src/django_tasks_oban/decorators.py|14|0|0|100%|
+|src/django_tasks_oban/engine.py|3|0|0|100%|
+|src/django_tasks_oban/models.py|33|0|0|100%|
 
 ## 🤝 Contributing
 
