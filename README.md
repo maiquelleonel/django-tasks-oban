@@ -169,7 +169,7 @@ Install dev dependencies: `uv sync --dev`.
 Run tests: `uv run python manage.py test tests -v 2`.
 
 
-## 📄 Licença
+## 📄 License
 
 MIT License. See `LICENSE` for details.
 
