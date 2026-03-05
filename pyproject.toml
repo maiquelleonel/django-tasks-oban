@@ -24,6 +24,9 @@ dev = [
     "oban",
 ]
 
+[tool.uv]
+package = true
+
 [tool.uv.sources]
 oban = { git = "https://github.com/oban-bg/oban-py.git" }
 
