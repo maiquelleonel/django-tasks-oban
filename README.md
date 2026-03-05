@@ -152,12 +152,13 @@ Ensure your Elixir workers are configured to listen for the keys provided in the
 ## 📊 Test Coverage
 We take reliability seriously. Our core modules maintain 100% coverage:
 
-|Module|Stmts|Miss|Branch|Cover|
-|---|---|---|---|---|
-|src/django_tasks_oban/backends.py|39|0|6|100%|
-|src/django_tasks_oban/decorators.py|14|0|0|100%|
-|src/django_tasks_oban/engine.py|3|0|0|100%|
-|src/django_tasks_oban/models.py|33|0|0|100%|
+|Name|Stmts|Miss|Branch|BrPart|Cover|Missing|
+|---|---|---|---|---|---|---|
+|src/django_tasks_oban/backends.py|94|0|24|0|100%|
+|src/django_tasks_oban/decorators.py|14|0|0|0|100%|
+|src/django_tasks_oban/engine.py|3|0|0|0|100%|
+|src/django_tasks_oban/models.py|31|0|4|0|100%|
+|TOTAL|142|0|28|0|100%|
 
 ## 🤝 Contributing
 
