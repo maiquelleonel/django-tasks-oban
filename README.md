@@ -144,7 +144,9 @@ def trace_task():
 # These will be automatically injected into the Oban 'meta' JSONB column.
 ```
 
-
+### Interoperability with Elixir Workers
+When using django-tasks-oban as a producer for Elixir-based Oban workers, the unique_key generated follows the standard SHA256 format. 
+Ensure your Elixir workers are configured to listen for the keys provided in the meta column.
 
 
 ## 📊 Test Coverage

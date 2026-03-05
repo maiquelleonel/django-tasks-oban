@@ -1,10 +1,12 @@
 from datetime import datetime, timedelta
+from unittest.mock import patch
 
 from django.db import transaction
 from django.tasks import task
 from django.test import TransactionTestCase, override_settings
 from django.utils import timezone
 
+from django_tasks_oban.backends import _generate_unique_key
 from django_tasks_oban.decorators import oban_task
 from django_tasks_oban.models import ObanJob, ObanJobState
 
@@ -214,3 +216,17 @@ class ObanBackendTest(TransactionTestCase):
 
         self.assertEqual(job.state, ObanJobState.SCHEDULED)
         self.assertEqual(job.meta["timezone_tz"], "Europe/Paris")
+
+    @patch("django_tasks_oban.backends.json.dumps")
+    def test_fallback_to_complex_params_to_gen_unique_key(self, mock_json):
+        import hashlib
+
+        mock_json.side_effect = TypeError
+        worker = "my-complex-worker"
+        args = [1, 2, 3, 4]
+        kwargs = {"tags": ["companyX", "suspicous", "security"], "trace_id": "123124-ABC-3s"}
+
+        expected_result = hashlib.sha256(f"{worker}-{repr(args)}-{repr(kwargs)}".encode()).hexdigest()
+        payload = _generate_unique_key(worker, args, kwargs)
+
+        self.assertEqual(payload, expected_result)
