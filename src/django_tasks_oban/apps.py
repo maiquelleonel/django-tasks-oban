@@ -8,15 +8,10 @@ class DjangoTasksObanConfig(AppConfig):
     verbose_name = "Django Tasks Oban"
 
     def ready(self):
-        # Registra o check de sistema quando o Django inicia
         checks.register(check_postgres_compatibility, checks.Tags.compatibility)
 
 
 def check_postgres_compatibility(app_configs, **kwargs):
-    """
-    Verifica se o django.contrib.postgres está instalado,
-    já que o ObanJob depende de ArrayField.
-    """
     from django.conf import settings
 
     errors = []
@@ -31,10 +26,8 @@ def check_postgres_compatibility(app_configs, **kwargs):
             )
         )
 
-    # Opcional: Verificar se o banco default é de fato Postgres
     from django.db import connections
 
-    # Tentamos verificar apenas se as conexões já estiverem configuradas
     try:
         for alias in connections:
             engine = settings.DATABASES[alias]["ENGINE"]
@@ -48,7 +41,6 @@ def check_postgres_compatibility(app_configs, **kwargs):
                     )
                 )
     except Exception:
-        # Evita quebrar se o DB não estiver acessível no momento do check
         pass
 
     return errors

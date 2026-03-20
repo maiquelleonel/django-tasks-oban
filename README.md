@@ -1,17 +1,17 @@
 # 🐘 django-tasks-oban 🚀
 
-[![CI](https://github.com/maiquelleonel/django-tasks-oban/actions/workflows/ci.yml/badge.svg)](https://github.com/maiquelleonel/django-tasks-oban/actions/workflows/ci.yml/badge.svg)
+[![CI](https://github.com/maiquelleonel/django-tasks-oban/actions/workflows/ci.yml/badge.svg)](https://github.com/maiquelleonel/django-tasks-oban/actions/workflows/ci.yml)
 
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Python](https://img.shields.io/badge/python-3.13-blue.svg?link=https%3A%2F%2Fwww.python.org)](https://www.python.org)
-[![Django](https://img.shields.io/badge/django-6.0%2B-darkgreen.svg?link=https%3A%2F%2Fwww.djangoproject.com)](https:://www.djangoproject.com)
+[![Django](https://img.shields.io/badge/django-6.0%2B-darkgreen.svg?link=https%3A%2F%2Fwww.djangoproject.com)](https://www.djangoproject.com)
 
 [![codecov](https://codecov.io/github/maiquelleonel/django-tasks-oban/graph/badge.svg?token=OG4ZFY7FX6)](https://codecov.io/github/maiquelleonel/django-tasks-oban)
 
 ![GitHub License](https://img.shields.io/github/license/maiquelleonel/django-tasks-oban)
 
 
-**A high-performance, transactional, and PostgreSQL-native task producer for Django 6.0+, fully compatible with the [Oban](https://github.comhttps://github.com/oban-bg/oban) ecosystem.**
+**A high-performance, transactional, and PostgreSQL-native task producer for Django 6.0+, fully compatible with the [Oban](https://github.com/oban-bg/oban) ecosystem.**
 
 ---
 
@@ -96,7 +96,7 @@ process_order.using(run_after=timedelta(minutes=5)).enqueue(order_id=123)
 process_order.using(queue="heavy_reports").enqueue(order_id=123)
 ```
 
-### 🔀 Assync (ASGI/Ninja/FastAPI)
+### 🔀 Async (ASGI/Ninja/FastAPI)
 ```python
 
 @task()
@@ -175,4 +175,3 @@ Run tests: `uv run python manage.py test tests -v 2`.
 MIT License. See `LICENSE` for details.
 
 Build with ❤️ and ☕
-

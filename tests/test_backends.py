@@ -60,7 +60,7 @@ def custom_schedule_with_attr_task(): ...
 
 
 @task()
-def sao_paulo_menagement_report(): ...
+def sao_paulo_management_report(): ...
 
 
 @oban_task(cron="@monthly", timezone="Europe/Paris")
@@ -203,9 +203,9 @@ class ObanBackendTest(TransactionTestCase):
 
     @override_settings(USE_TZ=True)
     def test_enqueue_timezoned_job(self):
-        sao_paulo_menagement_report.enqueue(customer_id=12312)
+        sao_paulo_management_report.enqueue(customer_id=12312)
 
-        job = ObanJob.objects.get(worker="sao_paulo_menagement_report")
+        job = ObanJob.objects.get(worker="sao_paulo_management_report")
 
         self.assertEqual(job.state, ObanJobState.AVAILABLE)
 

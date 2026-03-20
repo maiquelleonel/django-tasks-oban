@@ -8,7 +8,7 @@ async def get_oban_instance(alias: str = "default", queues: dict = None, pool_op
     db_conf = connections[alias].settings_dict
 
     if "postgresql" not in db_conf["ENGINE"]:
-        raise ImproperlyConfigured("O django-tasks-oban exige PostgreSQL (asyncpg).")
+        raise ImproperlyConfigured("django-tasks-oban needs PostgreSQL (asyncpg).")
 
     pool_options = pool_options or {}
 
