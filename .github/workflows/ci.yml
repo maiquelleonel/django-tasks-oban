@@ -46,6 +46,15 @@ jobs:
       - name: Install dependencies
         run: uv sync --all-extras --dev
 
+      - name: Check for missing migrations
+        env:
+          POSTGRES_DB: test_db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: 5432
+        run: uv run python manage.py makemigrations --check --dry-run
+
       - name: Run Django Tests
         env:
           POSTGRES_DB: test_db
