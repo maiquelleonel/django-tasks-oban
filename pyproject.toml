@@ -1,6 +1,6 @@
 [project]
 name = "django-tasks-oban"
-version = "0.3.1"
+version = "0.3.2"
 description = "Transactional PostgreSQL-native Task Backend for Django 6+ (Oban-compatible)"
 readme = "README.md"
 authors = [
