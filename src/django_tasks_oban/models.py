@@ -3,6 +3,11 @@ from django.db import models
 from django.utils import timezone
 from oban.job import JobState
 
+# # conditional imports
+# try:
+# except ImportError:
+#     ArrayField = False
+
 
 class ObanJobState(models.TextChoices): ...
 
@@ -24,8 +29,8 @@ class ObanJob(models.Model):
 
     args = models.JSONField(default=dict)
     meta = models.JSONField(default=dict, null=True)
-
     errors = models.JSONField(default=list)
+
     tags = ArrayField(models.TextField(), default=list, null=True)
     attempted_by = ArrayField(models.TextField(), default=list, null=True)
 
@@ -41,13 +46,11 @@ class ObanJob(models.Model):
     cancelled_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        managed = False
         db_table = "oban_jobs"
         indexes = [
             models.Index(fields=["queue"], name="oban_jobs_queue_index"),
             models.Index(fields=["state"], name="oban_jobs_state_index"),
-            models.Index(fields=["state", "queue", "priority", "scheduled_at", "id"], name="oban_jobs_main_idx"),
         ]
 
-    def __str__(self):  # pragma: no cover
+    def __str__(self):
         return f"{self.id}: {self.worker} [{self.state}]"
