@@ -23,6 +23,8 @@ wheels/
 *.typed
 # --- uv & Virtual Environments ---
 .venv/
+.ruff_cache/
+.mypy_cache/
 
 # --- Django ---
 *.log

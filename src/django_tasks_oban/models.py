@@ -1,31 +1,38 @@
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils import timezone
+from oban.job import JobState
 
-# conditional imports
+# # conditional imports
+# try:
+# except ImportError:
+#     ArrayField = False
 
-try:
-    from django.contrib.postgres.fields import ArrayField
-except ImportError:
-    ArrayField = None
+
+class ObanJobState(models.TextChoices): ...
+
+
+for s in JobState:
+    setattr(ObanJobState, s.name, s.value)
+
+ObanJobState._choices = [(s.value, s.name.title()) for s in JobState]  # type: ignore[attr-defined]
 
 
 class ObanJob(models.Model):
     id = models.BigAutoField(primary_key=True)
-    state = models.TextField(default="available")
+    state = models.TextField(
+        choices=ObanJobState._choices,  # type: ignore[attr-defined]
+        default=ObanJobState.AVAILABLE,  # type: ignore[attr-defined]
+    )
     queue = models.TextField(default="default")
     worker = models.TextField()
 
     args = models.JSONField(default=dict)
     meta = models.JSONField(default=dict, null=True)
+    errors = models.JSONField(default=list)
 
-    if ArrayField:
-        errors = ArrayField(models.JSONField(), default=list)
-        tags = ArrayField(models.TextField(), default=list, null=True)
-        attempted_by = ArrayField(models.TextField(), default=list, null=True)
-    else:
-        errors = models.JSONField(default=list)
-        tags = models.JSONField(default=list, null=True)
-        attempted_by = models.JSONField(default=list, null=True)
+    tags = ArrayField(models.TextField(), default=list, null=True)
+    attempted_by = ArrayField(models.TextField(), default=list, null=True)
 
     attempt = models.IntegerField(default=0)
     max_attempts = models.IntegerField(default=20)

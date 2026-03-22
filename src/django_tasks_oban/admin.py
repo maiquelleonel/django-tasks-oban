@@ -22,10 +22,10 @@ class ObanJobAdmin(admin.ModelAdmin):
         ("Status", {"fields": ("state", "queue", "worker", "priority")}),
         ("Payload & Metadata", {"fields": ("args", "meta", "tags")}),
         (
-            "Executions & Errors",
+            "Execution & Errors",
             {
                 "fields": ("attempt", "max_attempts", "attempted_by", "errors"),
-                "description": "IDs which try to run this job.",
+                "description": "Id's which try to execute this job.",
             },
         ),
         (

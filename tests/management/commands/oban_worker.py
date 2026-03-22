@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 import signal
 
 from django.conf import settings
@@ -33,8 +34,8 @@ class Command(BaseCommand):
                 try:
                     name, val = part.split(":", 1)
                     queues[name.strip()] = int(val)
-                except ValueError:
-                    raise CommandError(f"❌ Formato inválido: '{part}'. Use nome:valor")
+                except ValueError as err:
+                    raise CommandError(f"❌ Formato inválido: '{part}'. Use nome:valor") from err
             else:
                 queues[part] = default_val
         return queues
@@ -79,11 +80,10 @@ class Command(BaseCommand):
             stop_event.set()
 
         # Registra os sinais (SIGINT para Ctrl+C, SIGTERM para encerramento do sistema)
+        #
         for s in (signal.SIGINT, signal.SIGTERM):
-            try:
+            with contextlib.suppress(NotImplementedError):
                 loop.add_signal_handler(s, stop_handler)
-            except NotImplementedError:
-                pass  # Fallback para Windows (que não suporta signal handlers de loop)
 
         try:
             async with oban:

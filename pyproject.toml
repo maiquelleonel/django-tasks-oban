@@ -1,6 +1,6 @@
 [project]
 name = "django-tasks-oban"
-version = "0.3.0"
+version = "0.3.2"
 description = "Transactional PostgreSQL-native Task Backend for Django 6+ (Oban-compatible)"
 readme = "README.md"
 authors = [
@@ -19,9 +19,13 @@ build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
+    "asgiref>=3.11.1",
     "coverage>=7.13.4",
-    "dj-database-url>=3.1.2",
+    "django-stubs>=6.0.1",
+    "mypy>=1.19.1",
     "oban",
+    "pre-commit>=4.5.1",
+    "ruff>=0.15.7",
 ]
 
 [tool.uv]
@@ -60,3 +64,31 @@ include = ["src/django_tasks_oban/*"]
 
 [tool.coverage.html]
 directory = "htmlcov"
+
+[tool.ruff]
+target-version = "py313"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "ASYNC"]
+
+[tool.mypy]
+python_version = "3.13"
+plugins = ["mypy_django_plugin.main"]
+mypy_path  = '.'
+
+strict = false
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+check_untyped_defs = true        # Mantém a verificação dentro das funções
+warn_return_any = false
+no_implicit_optional = true
+
+# Ignora erros em arquivos que você não quer mexer agora
+[[tool.mypy.overrides]]
+module = ["tests.*", "manage"]
+ignore_errors = true
+
+[tool.django-stubs]
+# Se o seu settings estiver em oban/settings.py, use "oban.settings"
+django_settings_module = "tests.settings"
