@@ -25,7 +25,7 @@ class ObanScheduledTestMixin:
 
 class ObanScheduledTest(TransactionTestCase, ObanScheduledTestMixin):
     def test_sync_enqueue_scheduled(self):
-        delay = 600  # 10 minutos
+        delay = 600  # 10 minutes
         notify_user_task.using(run_after=timedelta(seconds=delay)).enqueue(x=1)
 
         query = ObanJob.objects.filter(worker="notify_user_task", args={"x": 1})

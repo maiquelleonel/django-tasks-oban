@@ -94,7 +94,7 @@ class ObanTaskBackend(BaseTaskBackend):
                 scheduled_at += run_after
             elif opts.get("scheduled_at", None):
                 scheduled_at = _normalize_timezone(opts.get("scheduled_at"))
-                del opts["scheduled_at"]
+                opts.pop("scheduled_at", None)
 
             state = ObanJobState.AVAILABLE
             if scheduled_at > now:
@@ -136,7 +136,6 @@ class ObanTaskBackend(BaseTaskBackend):
         return self._result(task, args, kwargs)
 
     async def aenqueue(self, task, args, kwargs):
-        """Implementação Assíncrona: Injeta .acreate()"""
         data = self._prepare_job_data(task, args, kwargs)
 
         await ObanJob.objects.acreate(**data)

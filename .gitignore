@@ -23,7 +23,6 @@ wheels/
 *.typed
 # --- uv & Virtual Environments ---
 .venv/
-uv.lock
 
 # --- Django ---
 *.log
