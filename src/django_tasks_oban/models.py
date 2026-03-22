@@ -10,19 +10,18 @@ class ObanJobState(models.TextChoices): ...
 for s in JobState:
     setattr(ObanJobState, s.name, s.value)
 
-ObanJobState._choices = [(s.value, s.name.title()) for s in JobState]
+ObanJobState._choices = [(s.value, s.name.title()) for s in JobState]  # type: ignore[attr-defined]
 
 
 class ObanJob(models.Model):
     id = models.BigAutoField(primary_key=True)
     state = models.TextField(
-        choices=ObanJobState._choices,
-        default=ObanJobState.AVAILABLE,
+        choices=ObanJobState._choices,  # type: ignore[attr-defined]
+        default=ObanJobState.AVAILABLE,  # type: ignore[attr-defined]
     )
     queue = models.TextField(default="default")
     worker = models.TextField()
 
-    # JSON nativo (JSONB no Postgres)
     args = models.JSONField(default=dict)
     meta = models.JSONField(default=dict, null=True)
 
@@ -34,7 +33,6 @@ class ObanJob(models.Model):
     max_attempts = models.IntegerField(default=20)
     priority = models.IntegerField(default=0)
 
-    # Timestamps com precisão de 6 (padrão do Oban/Elixir)
     inserted_at = models.DateTimeField(default=timezone.now)
     scheduled_at = models.DateTimeField(default=timezone.now)
     attempted_at = models.DateTimeField(null=True, blank=True)

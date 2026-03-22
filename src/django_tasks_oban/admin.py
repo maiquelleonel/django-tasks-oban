@@ -5,33 +5,31 @@ from .models import ObanJob
 
 @admin.register(ObanJob)
 class ObanJobAdmin(admin.ModelAdmin):
-    # Exibição na lista principal
     list_display = ("id", "worker", "state", "queue", "attempt", "scheduled_at")
     list_filter = ("state", "queue", "worker")
     search_fields = ("worker", "args", "attempted_by")
 
-    # Campos somente leitura para evitar alteração acidental de logs
     readonly_fields = (
         "inserted_at",
         "attempted_at",
         "completed_at",
         "cancelled_at",
         "discarded_at",
-        "attempted_by",  # Rastreabilidade: Quem tentou rodar?
+        "attempted_by",
     )
 
     fieldsets = (
-        ("Status Principal", {"fields": ("state", "queue", "worker", "priority")}),
-        ("Payload & Metadados", {"fields": ("args", "meta", "tags")}),
+        ("Status", {"fields": ("state", "queue", "worker", "priority")}),
+        ("Payload & Metadata", {"fields": ("args", "meta", "tags")}),
         (
-            "Execução & Erros",
+            "Execution & Errors",
             {
                 "fields": ("attempt", "max_attempts", "attempted_by", "errors"),
-                "description": "Lista de IDs de processos/hosts que tentaram executar este job.",
+                "description": "Id's which try to execute this job.",
             },
         ),
         (
-            "Linha do Tempo (Timestamps)",
+            "Timestamps",
             {
                 "fields": (
                     "inserted_at",
@@ -45,5 +43,4 @@ class ObanJobAdmin(admin.ModelAdmin):
         ),
     )
 
-    # Ordenação padrão: Jobs mais novos ou agendados primeiro
     ordering = ("-scheduled_at",)

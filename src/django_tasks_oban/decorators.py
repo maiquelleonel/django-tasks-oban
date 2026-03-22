@@ -1,10 +1,11 @@
 import inspect
 import weakref
+from typing import Any
 
 from django.tasks import Task
 from django.tasks import task as django_task
 
-OBAN_TASK_REGISTRY = weakref.WeakKeyDictionary()
+OBAN_TASK_REGISTRY: weakref.WeakKeyDictionary[Any, dict[str, Any]] = weakref.WeakKeyDictionary()
 
 
 def oban_task(**kwargs):

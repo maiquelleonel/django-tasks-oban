@@ -1,0 +1,19 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.1
+    hooks:
+      # Run the linter first (with auto-fix)
+      - id: ruff-check
+        args: [--fix]
+      # Then run the formatter
+      - id: ruff-format
+
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy
+        entry: mypy
+        language: system
+        types_or: [python, pyi]
+        args: ["--config-file=pyproject.toml"]
+        pass_filenames: true

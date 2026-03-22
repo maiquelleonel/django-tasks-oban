@@ -13,10 +13,6 @@ class DjangoTasksObanConfig(AppConfig):
 
 
 def check_postgres_compatibility(app_configs, **kwargs):
-    """
-    Verifica se o django.contrib.postgres está instalado,
-    já que o ObanJob depende de ArrayField.
-    """
     from django.conf import settings
 
     errors = []
@@ -25,40 +21,35 @@ def check_postgres_compatibility(app_configs, **kwargs):
         errors.append(
             checks.Error(
                 "'django.contrib.postgres' must be in INSTALLED_APPS.",
-                hint="Oban uses PostgreSQL-specific fields like ArrayField. Add 'django.contrib.postgres' to your INSTALLED_APPS settings.",
+                hint="Oban uses PostgreSQL-specific fields like ArrayField. Add 'django.contrib.postgres' "
+                "to your INSTALLED_APPS settings.",
                 obj="django_tasks_oban",
                 id="django_tasks_oban.E001",
             )
         )
 
-    # Opcional: Verificar se o banco default é de fato Postgres
     from django.db import connections
 
-    # Tentamos verificar apenas se as conexões já estiverem configuradas
     try:
         for alias in connections:
             engine = settings.DATABASES[alias]["ENGINE"]
             if "postgresql" not in engine:
                 errors.append(
-                    checks.Warning(
+                    checks.Error(
                         f"Database alias '{alias}' is not PostgreSQL.",
-                        hint=f"django-tasks-oban is optimized for PostgreSQL. Using {engine} might cause errors with ArrayField.",
+                        hint=f"django-tasks-oban is optimized for PostgreSQL. Using {engine} might cause errors with "
+                        "ArrayField.",
                         obj=f"settings.DATABASES['{alias}']",
                         id="django_tasks_oban.W001",
                     )
                 )
     except Exception:
-        # Evita quebrar se o DB não estiver acessível no momento do check
         pass
 
     return errors
 
 
 def check_oban_migrations_applied(app_configs, **kwargs):
-    """
-    Checks whether the oban_jobs table exists in the database,
-    i.e. whether the django_tasks_oban migrations have been applied.
-    """
     from django.db import connections
 
     errors = []
@@ -80,7 +71,6 @@ def check_oban_migrations_applied(app_configs, **kwargs):
                 )
             )
     except Exception:
-        # Avoid breaking if the database is not reachable during the check
         pass
 
     return errors
